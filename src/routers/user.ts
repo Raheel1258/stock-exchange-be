@@ -1,0 +1,14 @@
+import express from "express";
+const userController = require("../controllers/userController");
+const router = express.Router();
+const { GalleryImages } = require("../routers/awsS3");
+
+router.post("/signup", userController.signup);
+router.post("/login", userController.login);
+router.post("/updateUserPreference", userController.saveUserPreference);
+router.get("/getAvailableGroupSymbols", userController.getAvailableGroupSymbols);
+router.post("/createAvailableGroupSymbol", userController.createAvailableGroupSymbol);
+
+
+
+export default router;

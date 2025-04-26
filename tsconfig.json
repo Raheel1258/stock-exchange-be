@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES6",                
+    "module": "CommonJS",            
+    "outDir": "./dist",              
+    "rootDir": "./src",              
+    "strict": true,                  
+    "esModuleInterop": true,           // Enable compatibility with ES module imports
+    "skipLibCheck": true,              // Skip type checking for declaration files
+    "resolveJsonModule": true,         // Allow importing JSON files
+    "forceConsistentCasingInFileNames": true // Prevent case-sensitive filename errors
+  },
+  "include": ["src"],                   // Include source files
+  "exclude": ["node_modules", "dist"]  // Exclude unnecessary directories
+}
