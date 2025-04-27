@@ -5,7 +5,7 @@ const Stock = require("../models/stock");
 const common = require("../utlis/common");
 const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY!;
 
-const getHistoricalData = async (symbolId: string) => {
+const geytCurrentTimeData = async (symbolId: string) => {
   const websocketSymbol = await AvailableGroupSymbol.findOne({ _id: symbolId });
 
   if (!websocketSymbol) {
@@ -88,7 +88,7 @@ export const fetchCurrentTimeData = async (req: Request, res: Response) => {
         .json({ message: "symbolId, startDate, and endDate are required" });
     }
 
-    const data = await getHistoricalData(symbolId);
+    const data = await geytCurrentTimeData(symbolId);
 
     return res.status(200).json({ success: true, response: data });
   } catch (error: any) {

@@ -6,6 +6,7 @@ const { GalleryImages } = require("../routers/awsS3");
 router.post("/signup", userController.signup);
 router.post("/login", userController.login);
 router.post("/updateUserPreference", userController.saveUserPreference);
+router.get("/getUserPreference", userController.getUserPreference);
 router.get("/getAvailableGroupSymbols", userController.getAvailableGroupSymbols);
 router.post("/createAvailableGroupSymbol", userController.createAvailableGroupSymbol);
 

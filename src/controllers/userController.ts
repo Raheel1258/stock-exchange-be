@@ -88,6 +88,25 @@ export const saveUserPreference = async (req: Request, res: Response) => {
   res.json({ message: "Preference saved and subscribed!", response: response });
 };
 
+export const getUserPreference = async (req: Request, res: Response) => {
+  const accessToken = await common.GetAccessToken(req);
+  const existingUser = await common.GetUserIdFromToken(accessToken);
+  if (!existingUser) {
+    return res.status(401).json({ message: "User not found" });
+  }
+
+  const existingSymbol = await UserPreference.findOne({
+    userId: existingUser._id,
+  });
+
+  if (existingSymbol) {
+    return res.status(200).json({ message: "Preference found!", response: existingSymbol });
+  } else {
+    return res.status(400).json({ message: "Preference not found!" });
+  }
+
+}
+
 export const createAvailableGroupSymbol = async (
   req: Request,
   res: Response
@@ -120,6 +139,8 @@ export const createAvailableGroupSymbol = async (
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
 
 // Get all available symbols
 export const getAvailableGroupSymbols = async (req: Request, res: Response) => {

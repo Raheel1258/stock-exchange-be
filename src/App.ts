@@ -21,7 +21,8 @@ import userRouter from "./routers/user";
 import historicalDataRouter from "./routers/historicalData";
 import socketHandler, { connectFinnhubWebSocket } from "./controllers/socket";
 
-app.use([userRouter, historicalDataRouter]);
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/stock", historicalDataRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello from Node!");
@@ -43,10 +44,9 @@ const admin = require("firebase-admin");
 const serviceAccount = require("./services/finnhub-stock-firebase.json");
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
 
-
-connectFinnhubWebSocket();
+// connectFinnhubWebSocket();
 
 socketHandler(io);
