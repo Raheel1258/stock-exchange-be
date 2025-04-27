@@ -41,7 +41,7 @@ export const SendEmail = async (
         <br /><br /> Please use this code to complete your verification process.
         <br /> If you didn’t request this code or need assistance, feel free to contact our support team.
         <br /><br />Best Regards,
-        <br />Boarderline Team</p>
+        <br />Stock Market Team</p>
         <br/>`,
   };
 

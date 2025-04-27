@@ -26,15 +26,21 @@ const geytCurrentTimeData = async (symbolId: string) => {
     );
   }
 
-  console.log({ data });
-
   const formattedData = [
     {
+      symbolId: symbolId,
+      websocketSymbol: websocketSymbol.websocketSymbol,
+      group: websocketSymbol.group,
+      symbol: websocketSymbol.symbol,
       date: new Date(data.t * 1000).toISOString().split("T")[0],
       open: data.o ?? 0,
       high: data.h ?? 0,
       low: data.l ?? 0,
       close: data.c ?? 0,
+      percentage: data.dp ?? 0,
+      previousClose: data.pc ?? 0,
+      priceChangePrevious: data.d ?? 0,
+      current: data.c ?? 0,
       volume: 0, // Because volume is not provided in /quote
     },
   ];
@@ -114,7 +120,9 @@ export const fetchHistoricalData = async (req: Request, res: Response) => {
         .json({ message: "symbolId, startDate, and endDate are required" });
     }
 
-    const symbol = await AvailableGroupSymbol.findOne({ _id: symbolId });
+    const allSymbols = await AvailableGroupSymbol.find();
+
+    const symbol = allSymbols.find((s: any) => s._id.toString() === symbolId);
 
     if (!symbol) {
       return res.status(404).json({ message: "Symbol not found" });
@@ -125,7 +133,19 @@ export const fetchHistoricalData = async (req: Request, res: Response) => {
       date: { $gte: startDate, $lte: endDate },
     });
 
-    return res.status(200).json({ success: true, response: response });
+    const currentTimeSymbol = await Promise.all(
+      allSymbols.map(async (s: any) => {
+        return await geytCurrentTimeData(s._id);
+      })
+    );
+
+    return res.status(200).json({
+      success: true,
+      response: {
+        historicalData: response,
+        currentTimeData: currentTimeSymbol,
+      },
+    });
   } catch (error: any) {
     console.error("Error fetching historical data:", error.message);
     res.status(500).json({ success: false, message: error.message });

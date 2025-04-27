@@ -1,5 +1,5 @@
 export const OTP_EMAIL_SUBJECT: string =
-  "Your One-Time Passcode for Boarderline";
+  "Your One-Time Passcode for stock market verification";
 export const OTP_LENGTH: number = 4;
 
 
