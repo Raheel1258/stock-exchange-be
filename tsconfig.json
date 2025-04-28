@@ -10,6 +10,6 @@
     "resolveJsonModule": true,         // Allow importing JSON files
     "forceConsistentCasingInFileNames": true // Prevent case-sensitive filename errors
   },
-  "include": ["App.ts"],                   // Include source files
+  "include": ["src/**/*"],                   // Include source files
   "exclude": ["node_modules", "dist"]  // Exclude unnecessary directories
 }

@@ -1,12 +1,12 @@
 {
-  "name": "boarder-line-be",
+  "name": "stock-alert-be",
   "version": "1.0.0",
-  "description": "Boarder Line",
+  "description": "Stock Alert",
   "main": "App.ts",
   "scripts": {
     "build": "tsc",
     "start": "node --max-old-space-size=8192 dist/App.js",
-    "dev": "nodemon App.ts"
+    "dev": "nodemon src/App.ts"
   },
   "repository": {
     "type": "git",
