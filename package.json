@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node --max-old-space-size=8192 dist/App.js",
-    "dev": "nodemon src/App.ts"
+    "dev": "nodemon App.ts"
   },
   "repository": {
     "type": "git",
