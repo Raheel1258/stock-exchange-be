@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { geytCurrentTimeData } from "../utlis/common";
+import { geytCurrentTimeData } from "../utils/common";
 const AvailableGroupSymbol = require("../models/availableGroupSymbol");
 const Stock = require("../models/stock");
-const common = require("../utlis/common");
+const common = require("../utils/common");
 
 export const fetchCurrentTimeData = async (req: Request, res: Response) => {
   try {

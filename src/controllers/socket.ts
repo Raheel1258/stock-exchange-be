@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 const WebSocket = require("ws");
-import { SendEmail } from "../utlis/common";
+import { SendEmail } from "../utils/common";
 const User = require("../models/user");
 
 interface ActiveUser {
