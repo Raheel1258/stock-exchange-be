@@ -5,7 +5,7 @@
   "main": "App.ts",
   "scripts": {
     "build": "tsc",
-    "start": "node --max-old-space-size=8192 dist/App.js",
+    "start": "node --max-old-space-size=8192 dist/src/App.js",
     "dev": "nodemon src/App.ts"
   },
   "repository": {
