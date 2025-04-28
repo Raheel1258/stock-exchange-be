@@ -19,6 +19,17 @@ interface Config {
   IMAGES_GALLERY_FOLDER_PATH: string | undefined;
   FINNHUB_API_KEY: string | undefined;
   JWT_SECRET_KEY: string | undefined;
+  FIREBASE_TYPE: string | undefined;
+  FIREBASE_PROJECT_ID: string | undefined;
+  FIREBASE_PRIVATE_KEY_ID: string | undefined;
+  FIREBASE_PRIVATE_KEY: string | undefined;
+  FIREBASE_CLIENT_EMAIL: string | undefined;
+  FIREBASE_CLIENT_ID: string | undefined;
+  FIREBASE_AUTH_URI: string | undefined;
+  FIREBASE_TOKEN_URI: string | undefined;
+  FIREBASE_AUTH_PROVIDER_X509_CERT_URL: string | undefined;
+  FIREBASE_CLIENT_X509_CERT_URL: string | undefined;
+  FIREBASE_UNIVERSE_DOMAIN: string | undefined;
 }
 
 const config: Config = {
@@ -49,7 +60,18 @@ const config: Config = {
   // finnhub api key
   FINNHUB_API_KEY: process.env.FINNHUB_API_KEY,
 
-
+  // firebase
+  FIREBASE_TYPE: process.env.FIREBASE_TYPE,
+  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+  FIREBASE_PRIVATE_KEY_ID: process.env.FIREBASE_PRIVATE_KEY_ID,
+  FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
+  FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
+  FIREBASE_CLIENT_ID: process.env.FIREBASE_CLIENT_ID,
+  FIREBASE_AUTH_URI: process.env.FIREBASE_AUTH_URI,
+  FIREBASE_TOKEN_URI: process.env.FIREBASE_TOKEN_URI,
+  FIREBASE_AUTH_PROVIDER_X509_CERT_URL: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
+  FIREBASE_CLIENT_X509_CERT_URL: process.env.FIREBASE_CLIENT_X509_CERT_URL,
+  FIREBASE_UNIVERSE_DOMAIN: process.env.FIREBASE_UNIVERSE_DOMAIN,
 };
 
 export { config };
