@@ -121,20 +121,27 @@ export const geytCurrentTimeData = async (symbolId: string) => {
   }
 
   // Email alert logic
-  const userPreferences = await UserPreference.find({ symbolId});
+  const userPreferences = await UserPreference.find({ symbolId });
   for (const pref of userPreferences) {
-    if (pref.targetPrice && (data.c > pref.targetPrice || data.c < pref.targetPrice)) {
+    if (!pref.targetPrice) continue;
+
+    const currentDirection = data.c > pref.targetPrice ? "above" : "below";
+    if (pref.lastAlertedPrice !== data.c) {
       // Fetch user email
       const dbUser = await User.findById(pref.userId);
       if (dbUser && dbUser.email) {
-        const direction = data.c > pref.targetPrice ? "increased above" : "decreased below";
+        const directionText = currentDirection === "above" ? "increased above" : "decreased below";
         await SendEmail(
           dbUser.email,
           websocketSymbol.symbol,
-          direction,
+          directionText,
           data.c,
           pref.targetPrice
         );
+        // Update lastAlertDirection
+        pref.lastAlertDirection = currentDirection;
+        pref.lastAlertedPrice = data.c;
+        await pref.save();
       }
     }
   }

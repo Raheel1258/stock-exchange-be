@@ -18,6 +18,8 @@ const UserPreferenceSchema: Schema = new Schema({
   symbol: { type: String },
   websocketSymbol: { type: String },
   targetPrice: { type: Number },
+  lastAlertDirection: { type: String },
+  lastAlertedPrice: { type: Number },
 });
 
 module.exports = mongoose.model<IUserPreference>(

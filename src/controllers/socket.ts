@@ -119,18 +119,25 @@ export default (io: Server) => {
             io.to(id).emit("get-real-time-indices", trade);
           });
 
-          if (user.targetPrice && (price > user.targetPrice || price < user.targetPrice)) {
-            // Fetch user details
-            const dbUser = await User.findById(user.userId);
-            if (dbUser && dbUser.email) {
-              const direction = price > user.targetPrice ? "increased above" : "decreased below";
-              await SendEmail(
-                dbUser.email,
-                user.symbol || user.websocketSymbol,
-                direction,
-                price,
-                user.targetPrice
-              );
+          if (user.targetPrice) {
+            const currentDirection = price > user.targetPrice ? "above" : "below";
+            if (user.lastAlertedPrice !== price) {
+              // Fetch user details
+              const dbUser = await User.findById(user.userId);
+              if (dbUser && dbUser.email) {
+                const direction = currentDirection === "above" ? "increased above" : "decreased below";
+                await SendEmail(
+                  dbUser.email,
+                  user.symbol || user.websocketSymbol,
+                  direction,
+                  price,
+                  user.targetPrice
+                );
+                // Update lastAlertDirection and lastAlertedPrice in DB
+                user.lastAlertDirection = currentDirection;
+                user.lastAlertedPrice = price;
+                await user.save();
+              }
             }
           }
         });
