@@ -20,6 +20,7 @@ app.use(express.urlencoded({ limit: "100mb", extended: true }));
 import userRouter from "./routers/user";
 import historicalDataRouter from "./routers/historicalData";
 import socketHandler, { connectFinnhubWebSocket } from "./controllers/socket";
+import { ServiceAccount } from "firebase-admin";
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/stock", historicalDataRouter);
@@ -43,18 +44,10 @@ const admin = require("firebase-admin");
 
 // const serviceAccount = require("./src/services/finnhub-stock-firebase.json");
 
-const serviceAccount = {
-  type: config.FIREBASE_TYPE,
-  project_id: config.FIREBASE_PROJECT_ID,
-  private_key_id: config.FIREBASE_PRIVATE_KEY_ID,
-  private_key: config.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-  client_email: config.FIREBASE_CLIENT_EMAIL,
-  client_id: config.FIREBASE_CLIENT_ID,
-  auth_uri: config.FIREBASE_AUTH_URI,
-  token_uri: config.FIREBASE_TOKEN_URI,
-  auth_provider_x509_cert_url: config.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
-  client_x509_cert_url: config.FIREBASE_CLIENT_X509_CERT_URL,
-  universe_domain: config.FIREBASE_UNIVERSE_DOMAIN,
+const serviceAccount: ServiceAccount = {
+  projectId: config.FIREBASE_PROJECT_ID,
+  privateKey: config.FIREBASE_PRIVATE_KEY,
+  clientEmail: config.FIREBASE_CLIENT_EMAIL,
 };
 
 admin.initializeApp({
