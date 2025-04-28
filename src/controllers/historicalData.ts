@@ -1,38 +1,8 @@
-import { Request, Response, response } from "express";
-import axios from "axios";
+import { Request, Response } from "express";
 import { geytCurrentTimeData } from "../utlis/common";
 const AvailableGroupSymbol = require("../models/availableGroupSymbol");
 const Stock = require("../models/stock");
 const common = require("../utlis/common");
-
-function generateMockData(symbol: string, startDate: string, endDate: string) {
-  const data: any[] = [];
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const open = random(100, 500);
-    const close = random(100, 500);
-    const high = Math.max(open, close) + random(0, 10);
-    const low = Math.min(open, close) - random(0, 10);
-
-    data.push({
-      date: d.toISOString().split("T")[0],
-      open: parseFloat(open.toFixed(2)),
-      high: parseFloat(high.toFixed(2)),
-      low: parseFloat(low.toFixed(2)),
-      close: parseFloat(close.toFixed(2)),
-      volume: parseFloat(random(0.01, 1).toFixed(5)),
-      symbol,
-    });
-  }
-
-  return data;
-}
-
-function random(min: number, max: number) {
-  return Math.random() * (max - min) + min;
-}
 
 export const fetchCurrentTimeData = async (req: Request, res: Response) => {
   try {

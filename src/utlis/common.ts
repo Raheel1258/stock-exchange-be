@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import otpGenerator from "otp-generator";
 import jwt from "jsonwebtoken";
 import { Request } from "express";
+const UserPreference = require("../models/userPreference");
 
 const User = require("../models/user");
 const AvailableGroupSymbol = require("../models/availableGroupSymbol");
@@ -19,10 +20,13 @@ export const GenerateOtpNumber = async (): Promise<string> => {
     specialChars: false,
   });
 };
+
 export const SendEmail = async (
-  firstName: string,
   email: string,
-  otpToken: string
+  stockName: string,
+  direction: string,
+  currentPrice: number,
+  thresholdPrice: number
 ): Promise<any> => {
   const transporter = nodemailer.createTransport({
     service: config.EMAIL_SERVER,
@@ -38,42 +42,21 @@ export const SendEmail = async (
   const mailOptions = {
     from: config.EMAIL_SENDING_ID,
     to: email,
-    subject: OTP_EMAIL_SUBJECT,
-    html: `<p>Hi, ${firstName}<br />
-        Your one-time passcode is <strong>${otpToken}</strong>.
-        <br /><br /> Please use this code to complete your verification process.
-        <br /> If you didn’t request this code or need assistance, feel free to contact our support team.
-        <br /><br />Best Regards,
-        <br />Stock Market Team</p>
-        <br/>`,
+    subject: "Stock Alert Notification",
+    html: `<p>Hi,<br />
+    This is a notification that <strong>${stockName}</strong> has just <strong>${direction}</strong> your set threshold.<br /><br />
+    <strong>Current Price:</strong> $${currentPrice}<br />
+    <strong>Your Alert Price:</strong> $${thresholdPrice}<br /><br />
+    We wanted to keep you updated as per your alert settings.<br />
+    <br />If you have any questions or need to adjust your alerts, please visit your dashboard or contact our support team.<br /><br />
+    Best Regards,<br />
+    Stock Market Team
+  </p>`
   };
 
   const info = await transporter.sendMail(mailOptions);
   return info;
 };
-
-// export const GetUserIdFromToken = async (
-//   paramAccessToken: string | undefined
-// ): Promise<typeof User | null> => {
-//   if (!paramAccessToken) {
-//     return null;
-//   }
-//   try {
-//     const decodedToken = jwt.verify(
-//       paramAccessToken,
-//       config.ACCESS_TOKEN_SECRET
-//     ) as jwt.JwtPayload;
-
-//     const email = decodedToken.email;
-
-//     const user = await User.findOne({ email });
-
-//     return user;
-//   } catch (error) {
-//     console.error("Error decoding token:", error);
-//     return null;
-//   }
-// };
 
 export async function GetUserIdFromToken(token: string | undefined) {
   if (!token) {
@@ -133,8 +116,27 @@ export const geytCurrentTimeData = async (symbolId: string) => {
   if (!data || !data.t) {
     throw new Error(
       "Invalid response fetching historical data from Finnhub: " +
-        JSON.stringify(response.data)
+      JSON.stringify(response.data)
     );
+  }
+
+  // Email alert logic
+  const userPreferences = await UserPreference.find({ symbolId});
+  for (const pref of userPreferences) {
+    if (pref.targetPrice && (data.c > pref.targetPrice || data.c < pref.targetPrice)) {
+      // Fetch user email
+      const dbUser = await User.findById(pref.userId);
+      if (dbUser && dbUser.email) {
+        const direction = data.c > pref.targetPrice ? "increased above" : "decreased below";
+        await SendEmail(
+          dbUser.email,
+          websocketSymbol.symbol,
+          direction,
+          data.c,
+          pref.targetPrice
+        );
+      }
+    }
   }
 
   const formattedData = {
@@ -156,3 +158,32 @@ export const geytCurrentTimeData = async (symbolId: string) => {
 
   return formattedData;
 };
+
+export function generateMockData(symbol: string, startDate: string, endDate: string) {
+  const data: any[] = [];
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const open = random(100, 500);
+    const close = random(100, 500);
+    const high = Math.max(open, close) + random(0, 10);
+    const low = Math.min(open, close) - random(0, 10);
+
+    data.push({
+      date: d.toISOString().split("T")[0],
+      open: parseFloat(open.toFixed(2)),
+      high: parseFloat(high.toFixed(2)),
+      low: parseFloat(low.toFixed(2)),
+      close: parseFloat(close.toFixed(2)),
+      volume: parseFloat(random(0.01, 1).toFixed(5)),
+      symbol,
+    });
+  }
+
+  return data;
+}
+
+function random(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}

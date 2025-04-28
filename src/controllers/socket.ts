@@ -1,5 +1,7 @@
 import { Server, Socket } from "socket.io";
 const WebSocket = require("ws");
+import { SendEmail } from "../utlis/common";
+const User = require("../models/user");
 
 interface ActiveUser {
   userId: string;
@@ -24,10 +26,7 @@ export function connectFinnhubWebSocket(): void {
 
   ws?.addEventListener("open", async () => {
     console.log("✅ Connected to Finnhub WebSocket");
-
-    subscribeToSymbol(`BTC`);
-    subscribeToSymbol("BINANCE:BTCUSDT");
-
+    // subscribeToSymbol("BINANCE:BTCUSDT");
     const allSymbols = await availableGroupSymbol.find();
     allSymbols.forEach((symbol: any) => subscribeToSymbol(`${symbol.symbol}`));
   });
@@ -111,7 +110,7 @@ export default (io: Server) => {
 
         const users = await UserPreference.find({ websocketSymbol: symbol });
 
-        users.forEach((user: any) => {
+        users.forEach(async (user: any) => {
           const activeUser = activeUsers.find(
             (u) => u.userId === user.userId
           ) || { userId: user.userId, socketIds: [] };
@@ -120,8 +119,19 @@ export default (io: Server) => {
             io.to(id).emit("get-real-time-indices", trade);
           });
 
-          if (user.targetPrice && price >= user.targetPrice) {
-            console.log(`⚡ ALERT for user ${user.userId}`);
+          if (user.targetPrice && (price > user.targetPrice || price < user.targetPrice)) {
+            // Fetch user details
+            const dbUser = await User.findById(user.userId);
+            if (dbUser && dbUser.email) {
+              const direction = price > user.targetPrice ? "increased above" : "decreased below";
+              await SendEmail(
+                dbUser.email,
+                user.symbol || user.websocketSymbol,
+                direction,
+                price,
+                user.targetPrice
+              );
+            }
           }
         });
       }

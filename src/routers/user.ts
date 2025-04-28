@@ -1,7 +1,6 @@
 import express from "express";
 const userController = require("../controllers/userController");
 const router = express.Router();
-const { GalleryImages } = require("../routers/awsS3");
 
 router.post("/signup", userController.signup);
 router.post("/login", userController.login);
