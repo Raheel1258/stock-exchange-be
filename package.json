@@ -4,7 +4,7 @@
   "description": "Boarder Line",
   "main": "App.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp src/services/finnhub-stock-firebase.json dist/services/",
     "start": "node --max-old-space-size=4096 dist/App.js",
     "dev": "nodemon src/App.ts"
   },
