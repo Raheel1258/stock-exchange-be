@@ -7,7 +7,7 @@ import "./config/db";
 const { Server } = require("socket.io");
 
 const app: Application = express();
-const PORT: number = config.PORT;
+const PORT: number = config.PORT || 3000;
 
 // Middleware
 app.use(cookieParser());
