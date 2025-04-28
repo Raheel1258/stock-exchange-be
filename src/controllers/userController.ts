@@ -6,6 +6,7 @@ const common = require("../utlis/common");
 const bcrypt = require("bcrypt");
 const userService = require("../services/userService");
 import { Request, Response } from "express";
+import { geytCurrentTimeData } from "../utlis/common";
 
 export const signup = async (req: Request, res: Response) => {
   const { email, password, firstName, lastName } = req.body;
@@ -100,12 +101,13 @@ export const getUserPreference = async (req: Request, res: Response) => {
   });
 
   if (existingSymbol) {
-    return res.status(200).json({ message: "Preference found!", response: existingSymbol });
+    return res
+      .status(200)
+      .json({ message: "Preference found!", response: existingSymbol });
   } else {
     return res.status(400).json({ message: "Preference not found!" });
   }
-
-}
+};
 
 export const createAvailableGroupSymbol = async (
   req: Request,
@@ -140,13 +142,18 @@ export const createAvailableGroupSymbol = async (
   }
 };
 
-
-
 // Get all available symbols
 export const getAvailableGroupSymbols = async (req: Request, res: Response) => {
   try {
     const symbols = await AvailableGroupSymbol.find();
-    res.status(200).json(symbols);
+
+    const currentTimeSymbol = await Promise.all(
+      symbols.map(async (s: any) => {
+        return await geytCurrentTimeData(s._id);
+      })
+    );
+
+    res.status(200).json({ success: true, response: currentTimeSymbol });
   } catch (error) {
     console.error("Error fetching symbols:", error);
     res.status(500).json({ message: "Internal server error" });

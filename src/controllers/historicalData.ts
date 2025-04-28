@@ -1,52 +1,9 @@
 import { Request, Response, response } from "express";
 import axios from "axios";
+import { geytCurrentTimeData } from "../utlis/common";
 const AvailableGroupSymbol = require("../models/availableGroupSymbol");
 const Stock = require("../models/stock");
 const common = require("../utlis/common");
-const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY!;
-
-const geytCurrentTimeData = async (symbolId: string) => {
-  const websocketSymbol = await AvailableGroupSymbol.findOne({ _id: symbolId });
-
-  if (!websocketSymbol) {
-    throw new Error("Symbol mapping not found for " + symbolId);
-  }
-
-  // Build the URL dynamically (use the correct symbol, not hardcoded)
-  const response = await axios.get(
-    `https://finnhub.io/api/v1/quote?symbol=${websocketSymbol.symbol}&token=${FINNHUB_API_KEY}`
-  );
-
-  const data = response.data;
-
-  if (!data || !data.t) {
-    throw new Error(
-      "Invalid response fetching historical data from Finnhub: " +
-        JSON.stringify(response.data)
-    );
-  }
-
-  const formattedData = [
-    {
-      symbolId: symbolId,
-      websocketSymbol: websocketSymbol.websocketSymbol,
-      group: websocketSymbol.group,
-      symbol: websocketSymbol.symbol,
-      date: new Date(data.t * 1000).toISOString().split("T")[0],
-      open: data.o ?? 0,
-      high: data.h ?? 0,
-      low: data.l ?? 0,
-      close: data.c ?? 0,
-      percentage: data.dp ?? 0,
-      previousClose: data.pc ?? 0,
-      priceChangePrevious: data.d ?? 0,
-      current: data.c ?? 0,
-      volume: 0, // Because volume is not provided in /quote
-    },
-  ];
-
-  return formattedData;
-};
 
 function generateMockData(symbol: string, startDate: string, endDate: string) {
   const data: any[] = [];

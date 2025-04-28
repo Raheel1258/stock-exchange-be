@@ -1,12 +1,15 @@
 import nodemailer from "nodemailer";
 import otpGenerator from "otp-generator";
 import jwt from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
+import { Request } from "express";
+
 const User = require("../models/user");
+const AvailableGroupSymbol = require("../models/availableGroupSymbol");
 const admin = require("firebase-admin");
 
 import { config } from "../config/config";
 import { OTP_EMAIL_SUBJECT, OTP_LENGTH } from "./constants";
+import axios from "axios";
 
 export const GenerateOtpNumber = async (): Promise<string> => {
   return otpGenerator.generate(OTP_LENGTH, {
@@ -111,4 +114,47 @@ export const GetAccessToken = (req: Request): string | undefined => {
 export const CalculateDaysDifference = (date1: Date, date2: Date): number => {
   const diffTime = Math.abs(date2.getTime() - date1.getTime());
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+};
+
+export const geytCurrentTimeData = async (symbolId: string) => {
+  const websocketSymbol = await AvailableGroupSymbol.findOne({ _id: symbolId });
+
+  if (!websocketSymbol) {
+    throw new Error("Symbol mapping not found for " + symbolId);
+  }
+
+  // Build the URL dynamically (use the correct symbol, not hardcoded)
+  const response = await axios.get(
+    `https://finnhub.io/api/v1/quote?symbol=${websocketSymbol.symbol}&token=${config.FINNHUB_API_KEY}`
+  );
+
+  const data = response.data;
+
+  if (!data || !data.t) {
+    throw new Error(
+      "Invalid response fetching historical data from Finnhub: " +
+        JSON.stringify(response.data)
+    );
+  }
+
+  const formattedData = [
+    {
+      symbolId: symbolId,
+      websocketSymbol: websocketSymbol.websocketSymbol,
+      group: websocketSymbol.group,
+      symbol: websocketSymbol.symbol,
+      date: new Date(data.t * 1000).toISOString().split("T")[0],
+      open: data.o ?? 0,
+      high: data.h ?? 0,
+      low: data.l ?? 0,
+      close: data.c ?? 0,
+      percentage: data.dp ?? 0,
+      previousClose: data.pc ?? 0,
+      priceChangePrevious: data.d ?? 0,
+      current: data.c ?? 0,
+      volume: 0, // Because volume is not provided in /quote
+    },
+  ];
+
+  return formattedData;
 };
