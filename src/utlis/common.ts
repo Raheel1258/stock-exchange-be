@@ -137,24 +137,22 @@ export const geytCurrentTimeData = async (symbolId: string) => {
     );
   }
 
-  const formattedData = [
-    {
-      symbolId: symbolId,
-      websocketSymbol: websocketSymbol.websocketSymbol,
-      group: websocketSymbol.group,
-      symbol: websocketSymbol.symbol,
-      date: new Date(data.t * 1000).toISOString().split("T")[0],
-      open: data.o ?? 0,
-      high: data.h ?? 0,
-      low: data.l ?? 0,
-      close: data.c ?? 0,
-      percentage: data.dp ?? 0,
-      previousClose: data.pc ?? 0,
-      priceChangePrevious: data.d ?? 0,
-      current: data.c ?? 0,
-      volume: 0, // Because volume is not provided in /quote
-    },
-  ];
+  const formattedData = {
+    symbolId: symbolId,
+    websocketSymbol: websocketSymbol.websocketSymbol,
+    group: websocketSymbol.group,
+    symbol: websocketSymbol.symbol,
+    date: new Date(data.t * 1000).toISOString().split("T")[0],
+    open: data.o ?? 0,
+    high: data.h ?? 0,
+    low: data.l ?? 0,
+    close: data.c ?? 0,
+    percentage: data.dp ?? 0,
+    previousClose: data.pc ?? 0,
+    priceChangePrevious: data.d ?? 0,
+    current: data.c ?? 0,
+    volume: 0, // Because volume is not provided in /quote
+  };
 
   return formattedData;
 };
