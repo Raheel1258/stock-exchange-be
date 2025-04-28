@@ -41,7 +41,7 @@ const io = new Server(server, {
 
 const admin = require("firebase-admin");
 
-const serviceAccount = require("./services/finnhub-stock-firebase.json");
+const serviceAccount = require("./src/services/finnhub-stock-firebase.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
